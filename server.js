@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from "./db.js";
 import asyncHandler from "express-async-handler";
 import Led from "./ledModal.js";
+import Room from "./roomModal.js";
 
 dotenv.config();
 
@@ -29,11 +30,45 @@ const updateLEDStatus = async (status) => {
     }
 };
 
+const addRoom = asyncHandler(async (req, res) => {
+    const {room} = req.body;
+    const roomData = await Room.create({
+        room
+    });
+    if (roomData) {
+        res.status(201).json(roomData)
+    } else {
+        res.status(400);
+        throw new Error('Invalid Data')
+    }
+})
+
 app.get('/api/led/on', (req, res) => {
     updateLEDStatus(1); // Update status in the database
     res.json({ message: 'LED turned on' });
 });
 
+app.post('/api/room', async (req, res) => {
+    const {room} = req.body;
+    const roomData = await Room.create({
+        room
+    });
+    if (roomData) {
+        res.status(201).json(roomData)
+    } else {
+        res.status(400);
+        throw new Error('Invalid Data')
+    }
+});
+app.get('/api/room', async (req, res) => {
+    const rooms = await Room.find({});
+    if (rooms) {
+        res.status(201).json(rooms)
+    } else {
+        res.status(400);
+        throw new Error('Invalid Data')
+    }
+});
 app.get('/api/led/off', (req, res) => {
     updateLEDStatus(0); // Update status in the database
     res.json({ message: 'LED turned off' });
