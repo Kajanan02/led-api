@@ -48,6 +48,17 @@ app.get('/api/led/on', (req, res) => {
     res.json({ message: 'LED turned on' });
 });
 
+app.delete('/api/room/:name', async (req, res) => {
+    const room = await Room.findOne({room: req.params.name });
+    if (room) {
+        await room.deleteOne();
+        res.json({ message: 'Room removed' });
+    } else {
+        res.status(404);
+        throw new Error('Room not found');
+    }
+});
+
 app.post('/api/room', async (req, res) => {
     const {room} = req.body;
     const roomData = await Room.create({
